@@ -1,0 +1,42 @@
+INICIAR aplicação
+
+DEFINIR lista de botões com operadores, cores de fonte e fundo
+
+FUNÇÃO principal (main):
+    CONFIGURAR janela da calculadora (cor de fundo, tamanho, título)
+    CRIAR elemento de texto para exibir o resultado, inicializado com "0"
+
+    FUNÇÃO calcular (recebe operador e valor atual):
+        TENTAR:
+            Avaliar o valor atual
+            SE o operador for "%":
+                DIVIDIR o valor por 100
+            SE o operador for "±":
+                INVERTER o valor (tornar negativo ou positivo)
+            RETORNAR valor formatado com no máximo 5 casas decimais
+        SE ocorrer erro:
+            RETORNAR "Error"
+
+    FUNÇÃO selecionar (recebe evento):
+        Obter valor atual do display
+        Obter operador do botão clicado
+        SE o valor clicado for um número:
+            Concatenar ao valor atual
+        SE o valor clicado for "AC":
+            Resetar o valor para "0"
+        SE for outro operador:
+            Remover último operador se já houver um
+            Adicionar novo operador
+            SE o operador for "=", "%", ou "±":
+                Calcular resultado
+
+        Atualizar display com novo valor
+
+    CRIAR botões da calculadora com as propriedades da lista
+
+    CRIAR layout de exibição para o resultado
+    CRIAR layout de exibição para o teclado
+
+    ADICIONAR elementos à página (display e teclado)
+
+INICIALIZAR aplicação com a função principal
