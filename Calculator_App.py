@@ -29,9 +29,9 @@ def main(page: ft.Page):
     # Configurações da janela da calculadora.
     page.bgcolor = '#000'
     page.window_resizable = False
-    page.window_width = 250
-    page.window_height = 380
-    page.title = 'Calculadora'
+    page.window_width = 410
+    page.window_height = 450
+    page.title = 'Calculadora José'
     page.window_always_on_top = True
 
     # Elemento de texto que mostra o resultado da calculadora.
@@ -77,8 +77,8 @@ def main(page: ft.Page):
     btn = [ft.Container(
             content=ft.Text(value=btn['operador'], color=btn['fonte']),
             alignment=ft.alignment.center,
-            width=50,
-            height=50,
+            width=96,
+            height=46,
             bgcolor=btn['fundo'],
             border_radius=100,
             on_click=select
@@ -92,7 +92,7 @@ def main(page: ft.Page):
     )
     
     keyboard = ft.Row(
-        width=250,
+        width=401,
         wrap=True,
         controls=btn,
         alignment='end',
