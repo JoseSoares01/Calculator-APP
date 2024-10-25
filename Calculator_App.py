@@ -1,60 +1,77 @@
 import flet as ft
 from flet import colors
 from decimal import Decimal
+import keyboard as kb
 
-# Lista de botões da calculadora, com informações sobre operadores, cores de fonte e fundo.
+# Lista de botões da calculadora, com informações sobre operadores, cores de fonte e fundo
 botoes = [
-    {'operador': 'AC', 'fonte': colors.BLACK, 'fundo': colors.BLUE_GREY_100},
-    {'operador': '±', 'fonte': colors.BLACK, 'fundo': colors.BLUE_GREY_100},
-    {'operador': '%', 'fonte': colors.BLACK, 'fundo': colors.BLUE_GREY_100},
-    {'operador': '/', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
-    {'operador': '7', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '8', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '9', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '*', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
-    {'operador': '4', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '5', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '6', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
+    {'operador': 'C', 'fonte': colors.BLACK, 'fundo': "#98b29b"},
+    {'operador': '±', 'fonte': colors.BLACK, 'fundo': "#98b29b"},
+    {'operador': '%', 'fonte': colors.BLACK, 'fundo': "#98b29b"},
+    {'operador': '÷', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
+    {'operador': '7', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '8', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '9', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '×', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
+    {'operador': '4', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '5', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '6', 'fonte': colors.WHITE, 'fundo': colors.GREY},
     {'operador': '-', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
-    {'operador': '1', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '2', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '3', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
+    {'operador': '1', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '2', 'fonte': colors.WHITE, 'fundo': colors.GREY},
+    {'operador': '3', 'fonte': colors.WHITE, 'fundo': colors.GREY},
     {'operador': '+', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
-    {'operador': '0', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
-    {'operador': '.', 'fonte': colors.WHITE, 'fundo': colors.WHITE24},
+    {'operador': '0', 'fonte': colors.WHITE, 'fundo': colors.GREY},  # Largura dupla
+    {'operador': ',', 'fonte': colors.WHITE, 'fundo': colors.GREY},
     {'operador': '=', 'fonte': colors.WHITE, 'fundo': colors.ORANGE},
 ]
 
-def main(page: ft.Page):
-    # Configurações da janela da calculadora.
-    page.bgcolor = '#000'
-    page.window_resizable = False
-    page.window_width = 410
-    page.window_height = 450
-    page.title = 'Calculadora José'
-    page.window_always_on_top = True
+def simulate_click(key, result):
+    for btn in botoes:
+        if btn['operador'] == key:
+            select(ft.ControlEvent(control=ft.Text(value=key)), result)
 
-    # Elemento de texto que mostra o resultado da calculadora.
-    result = ft.Text(value="0", color=colors.WHITE, size=30)  # Melhorando a visibilidade do resultado
-    
-    # Função para calcular as operações da calculadora.
+def main(page: ft.Page):
+    # Configurações fixas da janela da calculadora
+    page.bgcolor = '#000000'
+    page.window_resizable = True
+    page.window_width = 300
+    page.window_height = 520
+    page.title = 'Calculadora'
+    page.window_always_on_top = True
+    page.padding = 0
+
+    # Dimensões dos botões
+    BUTTON_WIDTH = 65
+    BUTTON_HEIGHT = 65
+    BUTTON_SPACING = 4
+    ZERO_BUTTON_WIDTH = BUTTON_WIDTH * 2 + BUTTON_SPACING
+
+    # Elemento de texto que mostra o resultado
+    result = ft.Text(
+        value="0",
+        color=colors.WHITE,
+        size=45,
+        weight=ft.FontWeight.W_500
+    )
+
     def calculate(value_at):
         try:
+            value_at = value_at.replace('×', '*').replace('÷', '/')
             value = eval(value_at)
-            return str(Decimal(value).normalize())
+            return str(Decimal(value))
         except:
             return 'Error'
 
-    # Função para lidar com a seleção de botões da calculadora.
-    def select(e):
+    def select(e, result):
         value_at = result.value if result.value not in ('0', 'Error') else ''
         operador = e.control.content.value
 
-        if operador.isdigit() or operador == '.':
-            if operador == '.' and '.' in value_at.split()[-1]:  # Impede múltiplos pontos
+        if operador.isdigit() or operador == ',':
+            if operador == ',' and ',' in value_at.split()[-1]:
                 return
             value_at += operador
-        elif operador == 'AC':
+        elif operador == 'C':
             value_at = '0'
         elif operador == '±':
             value_at = str(-Decimal(value_at)) if value_at not in ('0', 'Error') else '0'
@@ -66,41 +83,61 @@ def main(page: ft.Page):
         elif operador == '=':
             value_at = calculate(value_at)
         else:
-            if value_at and value_at[-1] in ('/', '*', '-', '+'):
-                value_at = value_at[:-1]  # Substitui operador repetido
+            if value_at and value_at[-1] in ('÷', '×', '-', '+'):
+                value_at = value_at[:-1]
             value_at += operador
 
         result.value = value_at
         result.update()
 
-    # Criação dos botões da calculadora.
-    btn = [ft.Container(
-            content=ft.Text(value=btn['operador'], color=btn['fonte']),
-            alignment=ft.alignment.center,
-            width=96,
-            height=46,
-            bgcolor=btn['fundo'],
-            border_radius=100,
-            on_click=select
-        ) for btn in botoes]
+    def create_buttons():
+        buttons = []
+        for btn in botoes:
+            width = ZERO_BUTTON_WIDTH if btn['operador'] == '0' else BUTTON_WIDTH
+            buttons.append(
+                ft.Container(
+                    content=ft.Text(value=btn['operador'], color=btn['fonte'], size=28, weight=ft.FontWeight.W_500),
+                    alignment=ft.alignment.center,
+                    width=width,
+                    height=BUTTON_HEIGHT,
+                    bgcolor=btn['fundo'],
+                    border_radius=12,
+                    on_click=lambda e, r=result: select(e, r)
+                )
+            )
+        return buttons
 
-    # Configuração dos elementos de exibição do resultado e do teclado.
-    display = ft.Row(
-        width=250, 
-        controls=[result],
-        alignment='end'
+    # Configuração dos elementos de exibição do resultado e do teclado
+    display = ft.Container(
+        content=ft.Row(
+            controls=[result],
+            alignment=ft.MainAxisAlignment.END
+        ),
+        padding=ft.padding.only(right=20, top=20, bottom=20),
+        width=page.window_width - 20
     )
-    
-    keyboard = ft.Row(
-        width=401,
-        wrap=True,
-        controls=btn,
-        alignment='end',
+
+    keyboard = ft.Container(
+        content=ft.Row(
+            wrap=True,
+            controls=create_buttons(),
+            spacing=BUTTON_SPACING,
+            alignment=ft.MainAxisAlignment.CENTER,
+        ),
+        width=page.window_width - 20
     )
 
-    # Adição dos elementos à página.
-    page.add(display)
-    page.add(keyboard)
+    # Container principal para centralizar o conteúdo
+    main_container = ft.Container(
+        content=ft.Column(
+            controls=[display, keyboard],
+            spacing=0,
+            alignment=ft.MainAxisAlignment.CENTER,
+        ),
+        alignment=ft.alignment.center,
+    )
 
-# Inicialização da aplicação.
+    # Adiciona o container principal à página
+    page.add(main_container)
+
 ft.app(target=main)
